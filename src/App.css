@@ -1,30 +1,15 @@
-.App {
-  background-color: #3eb54f;
-  width: 100%;
-  height: 100%;
+.recovered {
+  color: green;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-areas: "cases cases deaths deaths recovered recovered";
-  grid-gap: 10px;
-  background-color: #2196f3;
-  padding: 10px;
+.deaths {
+  color: red;
 }
 
-.grid-container > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 10px 0;
-  font-size: 30px;
+.active {
+  color: cyan;
 }
 
 .cases {
-  grid-area: cases;
-}
-.deaths {
-  grid-area: deaths;
-}
-.recovered {
-  grid-area: recovered;
+  color: sienna;
 }

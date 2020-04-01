@@ -3,11 +3,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
 import axios from "axios";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
 import "./App.css";
 
 const useStyles = makeStyles(theme => ({
@@ -16,11 +19,6 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     flexGrow: 1
-  },
-  heading: {
-    paddingLeft: "10px",
-    paddingTop: "10px",
-    color: "#FFFFFF"
   },
   rootCard: {
     width: "100%"
@@ -33,24 +31,12 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const classes = useStyles();
   const [globalData, setGlobalData] = useState(null);
-  const [countryData, setCountryData] = useState(null);
 
   if (!globalData) {
     axios
-      .get("https://coronavirus-19-api.herokuapp.com/all")
+      .get("https://api.covid19india.org/data.json")
       .then(function(response) {
-        setGlobalData(response.data);
-      })
-      .catch(function(error) {
-        // reject(error);
-      });
-  }
-
-  if (!countryData) {
-    axios
-      .get("https://coronavirus-19-api.herokuapp.com/countries")
-      .then(function(response) {
-        setCountryData(response.data);
+        setGlobalData(response.data.statewise);
       })
       .catch(function(error) {
         // reject(error);
@@ -62,23 +48,23 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Corona Virus Tracker
+            Corona Virus Tracker | India
           </Typography>
         </Toolbar>
       </AppBar>
       {globalData ? <TotalCases globalData={globalData} /> : <p>Loading....</p>}
-      {countryData ? (
-        <CountryCases countryData={countryData} />
+      {/* {testedData ? (
+        <DailyUpdates testedData={testedData} />
       ) : (
         <p>Loading....</p>
-      )}
+      )} */}
       <footer style={{ textAlign: "center" }}>
         <a href="https://www.trentweet.in">Posted by Trentweet</a>
         <p>
           UI Developed by:
           <a href="https://github.com/KhanStan99"> KhanStan</a> | API Provided
           by:
-          <a href="https://github.com/javieraviles"> javieraviles</a>.
+          <a href="https://twitter.com/covid19indiaorg"> covid19indiaorg</a>.
         </p>
       </footer>
     </div>
@@ -86,61 +72,62 @@ function App() {
 }
 
 function TotalCases(props) {
-  const classes = useStyles();
   return (
-    <div style={{ backgroundColor: "#2196f3" }}>
-      <Typography variant="h6" className={classes.heading}>
-        World Wide Cases
-      </Typography>
-      <div className="grid-container">
-        <div className="cases">{formatNumber(props.globalData.cases)}</div>
-        <div className="deaths">{formatNumber(props.globalData.deaths)}</div>
-        <div className="recovered">
-          {formatNumber(props.globalData.recovered)}
-        </div>
-      </div>
-    </div>
+    <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>State</TableCell>
+            <TableCell>Confirmed Cases</TableCell>
+            <TableCell>Active Cases</TableCell>
+            <TableCell>Recovered Cases</TableCell>
+            <TableCell>Deaths Cases</TableCell>
+            <TableCell>Date Time</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {props.globalData.map(testItem => (
+            <TableRow>
+              <TableCell component="th" scope="testItem.confirmed">
+                {testItem.state}
+              </TableCell>
+              <TableCell component="th" scope="testItem.confirmed">
+                <span className="cases">
+                  {formatNumber(testItem.confirmed)} [+
+                  {formatNumber(testItem.delta.confirmed)}]
+                </span>
+              </TableCell>
+              <TableCell component="th" scope="testItem.active">
+                <span className="deaths">
+                  {formatNumber(testItem.deaths)} [+
+                  {formatNumber(testItem.delta.deaths)}]
+                </span>
+              </TableCell>
+              <TableCell
+                className="recovered"
+                component="th"
+                scope="testItem.recovered"
+              >
+                <span className="recovered">
+                  {formatNumber(testItem.recovered)} [+
+                  {formatNumber(testItem.delta.recovered)}]
+                </span>
+              </TableCell>
+              <TableCell component="th" scope="testItem.deaths">
+                <span className="deaths">
+                  {formatNumber(testItem.deaths)} [+
+                  {formatNumber(testItem.delta.deaths)}]
+                </span>
+              </TableCell>
+              <TableCell component="th" scope="testItem.lastupdatedtime">
+                {testItem.lastupdatedtime}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
-}
-
-function CountryCases(props) {
-  const classes = useStyles();
-  const countryData = props.countryData;
-  const listItems = countryData.map(number => (
-    <List className={classes.root} key={number.country}>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          primary={number.country}
-          secondary={
-            <React.Fragment>
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                color="textPrimary"
-              >
-                Cases: {number.cases} — Deaths: {number.deaths} — Recovered:{" "}
-                {number.recovered} — Critical: {number.critical} — Active:{" "}
-                {number.active}
-              </Typography>
-              <br />
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                color="textPrimary"
-              >
-                Today Deaths: {number.todayDeaths} — Cases Today:{" "}
-                {number.todayCases}
-              </Typography>
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-      <Divider variant="middle" />
-    </List>
-  ));
-  return listItems;
 }
 
 function formatNumber(num) {
