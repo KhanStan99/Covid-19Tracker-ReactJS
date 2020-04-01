@@ -75,11 +75,11 @@ function TotalCases(props) {
         <TableHead>
           <TableRow>
             <TableCell>State</TableCell>
-            <TableCell>Confirmed Cases</TableCell>
-            <TableCell>Active Cases</TableCell>
-            <TableCell>Recovered Cases</TableCell>
-            <TableCell>Deaths Cases</TableCell>
-            <TableCell>Date Time</TableCell>
+            <TableCell>Confirmed</TableCell>
+            <TableCell>Active</TableCell>
+            <TableCell>Recovered</TableCell>
+            <TableCell>Deaths</TableCell>
+            <TableCell>Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
