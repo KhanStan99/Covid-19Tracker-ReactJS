@@ -47,17 +47,14 @@ function App() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
+        <img className="image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png" />
+          <Typography variant="h6" className={classes.title}>            
             Corona Virus Tracker | India
           </Typography>
         </Toolbar>
       </AppBar>
       {globalData ? <TotalCases globalData={globalData} /> : <p>Loading....</p>}
-      {/* {testedData ? (
-        <DailyUpdates testedData={testedData} />
-      ) : (
-        <p>Loading....</p>
-      )} */}
+
       <footer style={{ textAlign: "center" }}>
         <a href="https://www.trentweet.in">Posted by Trentweet</a>
         <p>
@@ -87,7 +84,7 @@ function TotalCases(props) {
         </TableHead>
         <TableBody>
           {props.globalData.map(testItem => (
-            <TableRow>
+            <TableRow key={testItem.state}>
               <TableCell component="th" scope="testItem.confirmed">
                 {testItem.state}
               </TableCell>

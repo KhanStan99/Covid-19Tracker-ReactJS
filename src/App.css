@@ -1,3 +1,9 @@
+.image {
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}
+
 .recovered {
   color: green;
 }
