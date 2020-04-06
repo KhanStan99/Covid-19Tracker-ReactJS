@@ -47,8 +47,12 @@ function App() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-        <img className="image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png" />
-          <Typography variant="h6" className={classes.title}>            
+          <img
+            alt="logo"
+            className="image"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png"
+          />
+          <Typography variant="h6" className={classes.title}>
             Corona Virus Tracker | India
           </Typography>
         </Toolbar>
@@ -91,13 +95,13 @@ function TotalCases(props) {
               <TableCell component="th" scope="testItem.confirmed">
                 <span className="cases">
                   {formatNumber(testItem.confirmed)} [+
-                  {formatNumber(testItem.delta.confirmed)}]
+                  {formatNumber(testItem.deltaconfirmed)}]
                 </span>
               </TableCell>
               <TableCell component="th" scope="testItem.active">
                 <span className="deaths">
                   {formatNumber(testItem.deaths)} [+
-                  {formatNumber(testItem.delta.deaths)}]
+                  {formatNumber(testItem.deltadeaths)}]
                 </span>
               </TableCell>
               <TableCell
@@ -107,13 +111,13 @@ function TotalCases(props) {
               >
                 <span className="recovered">
                   {formatNumber(testItem.recovered)} [+
-                  {formatNumber(testItem.delta.recovered)}]
+                  {formatNumber(testItem.deltarecovered)}]
                 </span>
               </TableCell>
               <TableCell component="th" scope="testItem.deaths">
                 <span className="deaths">
                   {formatNumber(testItem.deaths)} [+
-                  {formatNumber(testItem.delta.deaths)}]
+                  {formatNumber(testItem.deltadeaths)}]
                 </span>
               </TableCell>
               <TableCell component="th" scope="testItem.lastupdatedtime">
