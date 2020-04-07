@@ -99,9 +99,8 @@ function TotalCases(props) {
                 </span>
               </TableCell>
               <TableCell component="th" scope="testItem.active">
-                <span className="deaths">
-                  {formatNumber(testItem.deaths)} [+
-                  {formatNumber(testItem.deltadeaths)}]
+                <span className="active">
+                  {formatNumber(testItem.active)}
                 </span>
               </TableCell>
               <TableCell
