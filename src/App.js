@@ -158,7 +158,7 @@ function TotalCases(props) {
             {testItem.state !== "Total" && props.cityData ? (
               <DetailedPanel state={testItem.state} cityList={props.cityData} />
             ) : (
-              "Nothing to show"
+              "Above numbers represents Total, Active, Recovered & Death cases"
             )}
           </ExpansionPanelDetails>
         </ExpansionPanel>
