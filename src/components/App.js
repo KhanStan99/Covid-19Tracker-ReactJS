@@ -119,6 +119,15 @@ function App() {
 
 function TotalCases(props) {
   const classes = useStyles();
+  function getFormatted(actual, delta) {
+    const main = formatNumber(actual);
+    const dDelta = formatNumber(delta);
+    let returnValue = main;
+    if (dDelta > 0) {
+      returnValue = `${returnValue} [+${dDelta}]`;
+    }
+    return returnValue;
+  }
   return (
     <TableContainer component={Paper}>
       {props.globalData.map((testItem) => (
@@ -133,7 +142,10 @@ function TotalCases(props) {
               <br />
               <div className={classes.chips}>
                 <Chip
-                  label={formatNumber(testItem.confirmed)}
+                  label={getFormatted(
+                    testItem.confirmed,
+                    testItem.deltaconfirmed
+                  )}
                   avatar={<Avatar>T</Avatar>}
                 />
                 <Chip
@@ -142,16 +154,19 @@ function TotalCases(props) {
                 />
 
                 <Chip
-                  label={formatNumber(testItem.recovered)}
+                  label={getFormatted(
+                    testItem.recovered,
+                    testItem.deltarecovered
+                  )}
                   avatar={<Avatar className={classes.green}>R</Avatar>}
                 />
 
                 <Chip
                   avatar={<Avatar className={classes.red}>D</Avatar>}
-                  label={formatNumber(testItem.deaths)}
+                  label={getFormatted(testItem.deaths, testItem.deltadeaths)}
                 />
               </div>
-              <small>last update: {testItem.lastupdatedtime}</small>
+              <LastUpdated date={testItem.lastupdatedtime} />
             </div>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -194,7 +209,10 @@ function DetailedPanel(props) {
                 {item.district}
               </TableCell>
               <TableCell align="right">
-                {formatNumber(item.confirmed)}
+                {formatNumber(item.confirmed)}{" "}
+                {item.delta.confirmed > 0
+                  ? "[+" + formatNumber(item.delta.confirmed) + "]"
+                  : null}
               </TableCell>
             </TableRow>
           ))}
@@ -206,6 +224,45 @@ function DetailedPanel(props) {
 
 function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
+
+function LastUpdated(props) {
+  const time = props.date.slice(11);
+
+  var time_start = new Date();
+  var time_end = new Date();
+  var value_start = time.split(":");
+  var value_end = (
+    time_end.getHours() +
+    ":" +
+    time_end.getMinutes() +
+    ":" +
+    time_end.getSeconds()
+  ).split(":");
+
+  time_start.setHours(value_start[0], value_start[1], value_start[2], 0);
+  time_end.setHours(value_end[0], value_end[1], value_end[2], 0);
+
+  let hours = (time_end - time_start) / 1000 / 3600;
+  hours = hours.toString().replace("-", "");
+  hours = hours.split(".");
+  hours = Number(hours[0]);
+  let finalWord;
+  if (hours > 0) {
+    finalWord = hours + " hour(s) ago";
+  } else {
+    finalWord =
+      Math.round(((time_end - time_start) / 1000 / 3600) * 60) +
+      " minutes ago";
+  }
+
+  let sss = "";
+
+  if (!finalWord.endsWith("(s) ago")) {
+    sss = "deaths";
+  }
+
+  return <small className={sss}>last update: {finalWord}</small>;
 }
 
 export default App;
