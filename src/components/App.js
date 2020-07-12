@@ -25,6 +25,7 @@ import red from "@material-ui/core/colors/red";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Link from "@material-ui/core/Link";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,10 +67,11 @@ function App() {
   const [globalData, setGlobalData] = useState(null);
   const [cityData, setCityData] = useState(null);
   const [testedData, setTestedData] = useState(null);
+  const [darkTheme, setDarkTheme] = useState(true);
 
-  const darkTheme = createMuiTheme({
+  const baseTheme = createMuiTheme({
     palette: {
-      type: "dark",
+      type: darkTheme ? "dark" : "light",
     },
   });
 
@@ -107,8 +109,12 @@ function App() {
       });
   }
 
+  const handleChange = (event) => {
+    setDarkTheme(!darkTheme);
+  };
+
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={baseTheme}>
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar variant="dense">
@@ -120,6 +126,10 @@ function App() {
             <Typography variant="h6" className={classes.title}>
               Corona Virus Tracker | India
             </Typography>
+            <Switch
+              checked={darkTheme}
+              onChange={handleChange}              
+            />
           </Toolbar>
         </AppBar>
 
