@@ -18,24 +18,29 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import purple from "@material-ui/core/colors/purple";
+import pink from "@material-ui/core/colors/pink";
+import red from "@material-ui/core/colors/red";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    width: "100%",
-    backgroundColor: theme.palette.background.paper,
   },
-  green: {
-    color: "#6eff9e",
-    backgroundColor: "#6eff9e",
+  recovered: {
+    color: theme.palette.getContrastText(purple[500]),
+    backgroundColor: purple[500],
   },
   red: {
-    color: "#ff4567",
-    backgroundColor: "#ff4567",
+    color: theme.palette.getContrastText(red[500]),
+    backgroundColor: red[500],
   },
   blue: {
-    color: "#91b6ff",
-    backgroundColor: "#91b6ff",
+    color: theme.palette.getContrastText(pink[500]),
+    backgroundColor: pink[500],
   },
   title: {
     flexGrow: 1,
@@ -60,6 +65,13 @@ function App() {
   const classes = useStyles();
   const [globalData, setGlobalData] = useState(null);
   const [cityData, setCityData] = useState(null);
+  const [testedData, setTestedData] = useState(null);
+
+  const darkTheme = createMuiTheme({
+    palette: {
+      type: "dark",
+    },
+  });
 
   if (!globalData) {
     axios
@@ -83,37 +95,70 @@ function App() {
       });
   }
 
+  if (!testedData) {
+    axios
+      .get("https://api.covid19india.org/data.json")
+      .then(function (response) {
+        const list = response.data.tested;
+        setTestedData(list[list.length - 1]);
+      })
+      .catch(function (error) {
+        // reject(error);
+      });
+  }
+
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <img
-            alt="logo"
-            className="image"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png"
-          />
-          <Typography variant="h6" className={classes.title}>
-            Corona Virus Tracker | India
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <ThemeProvider theme={darkTheme}>
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar variant="dense">
+            <img
+              alt="logo"
+              className="image"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png"
+            />
+            <Typography variant="h6" className={classes.title}>
+              Corona Virus Tracker | India
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
-      {globalData ? (
-        <TotalCases globalData={globalData} cityData={cityData} />
-      ) : (
-        <p>Loading....</p>
-      )}
+        {globalData && cityData && testedData ? (
+          <>
+            <TestedData testedData={testedData} />
+            <TotalCases globalData={globalData} cityData={cityData} />
+          </>
+        ) : (
+          <p>Loading....</p>
+        )}
 
-      <footer style={{ textAlign: "center" }}>
-        <a href="https://www.trentweet.in">Posted by Trentweet</a>
-        <p>
-          UI Developed by:
-          <a href="https://github.com/KhanStan99"> KhanStan</a> | API Provided
-          by:
-          <a href="https://twitter.com/covid19indiaorg"> covid19indiaorg</a>.
-        </p>
-      </footer>
-    </div>
+        <footer style={{ textAlign: "center" }}>
+          <a href="https://www.trentweet.in">Posted by Trentweet</a>
+          <p>
+            UI Developed by:
+            <a href="https://github.com/KhanStan99"> KhanStan</a> | API Provided
+            by:
+            <a href="https://twitter.com/covid19indiaorg"> covid19indiaorg</a>.
+          </p>
+        </footer>
+      </div>
+    </ThemeProvider>
+  );
+}
+
+function TestedData(props) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography color="textSecondary" gutterBottom>
+          Tested {formatNumber(props.testedData.totalsamplestested)} as of{" "}
+          {props.testedData.testedasof} per{" "}
+          <Link target="_blank" href={props.testedData.source}>
+            source
+          </Link>
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -158,7 +203,7 @@ function TotalCases(props) {
                     testItem.recovered,
                     testItem.deltarecovered
                   )}
-                  avatar={<Avatar className={classes.green}>R</Avatar>}
+                  avatar={<Avatar className={classes.recovered}>R</Avatar>}
                 />
 
                 <Chip
@@ -252,17 +297,10 @@ function LastUpdated(props) {
     finalWord = hours + " hour(s) ago";
   } else {
     finalWord =
-      Math.round(((time_end - time_start) / 1000 / 3600) * 60) +
-      " minutes ago";
+      Math.round(((time_end - time_start) / 1000 / 3600) * 60) + " minutes ago";
   }
 
-  let sss = "";
-
-  if (!finalWord.endsWith("(s) ago")) {
-    sss = "deaths";
-  }
-
-  return <small className={sss}>last update: {finalWord}</small>;
+  return <small>last update: {finalWord}</small>;
 }
 
 export default App;
