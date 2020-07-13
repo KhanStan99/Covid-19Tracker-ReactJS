@@ -26,11 +26,9 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Link from "@material-ui/core/Link";
 import Switch from "@material-ui/core/Switch";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
   recovered: {
     color: theme.palette.getContrastText(purple[500]),
     backgroundColor: purple[500],
@@ -115,56 +113,89 @@ function App() {
 
   return (
     <ThemeProvider theme={baseTheme}>
-      <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <img
-              alt="logo"
-              className="image"
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png"
-            />
-            <Typography variant="h6" className={classes.title}>
-              Corona Virus Tracker | India
-            </Typography>
-            <Switch
-              checked={darkTheme}
-              onChange={handleChange}              
-            />
-          </Toolbar>
-        </AppBar>
-
+      <AppBar position="static">
+        <Toolbar variant="dense">
+          <img
+            alt="logo"
+            className="image"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/SARS-CoV-2_without_background.png/220px-SARS-CoV-2_without_background.png"
+          />
+          <Typography variant="h6" className={classes.title}>
+            Corona Virus Tracker | India
+          </Typography>
+          <Switch checked={darkTheme} onChange={handleChange} />
+        </Toolbar>
+      </AppBar>
+      <Paper elevation={0} square>
         {globalData && cityData && testedData ? (
           <>
             <TestedData testedData={testedData} />
             <TotalCases globalData={globalData} cityData={cityData} />
           </>
         ) : (
-          <p>Loading....</p>
+          <div>
+            <Skeleton animation="wave" height={118} />
+            <Skeleton animation="wave" height={118} />
+            <Skeleton animation="wave" height={118} />
+            <Skeleton animation="wave" height={118} />
+            <Skeleton animation="wave" height={118} />
+            <Skeleton animation="wave" height={118} />
+          </div>
         )}
 
-        <footer style={{ textAlign: "center" }}>
-          <a href="https://www.trentweet.in">Posted by Trentweet</a>
-          <p>
-            UI Developed by:
-            <a href="https://github.com/KhanStan99"> KhanStan</a> | API Provided
-            by:
-            <a href="https://twitter.com/covid19indiaorg"> covid19indiaorg</a>.
-          </p>
-        </footer>
-      </div>
+        <Card style={{ textAlign: "center" }}>
+          <Typography variant="h6" color="#FFF">
+            <Link
+              color="secondary"
+              target="_blank"
+              href="https://www.trentweet.in"
+            >
+              Posted by Trentweet
+            </Link>
+          </Typography>
+          <Typography variant="caption" color="textPrimary">
+            UI Developed by:{" "}
+            <Link
+              color="secondary"
+              target="_blank"
+              href="https://github.com/KhanStan99"
+            >
+              KhanStan
+            </Link>{" "}
+            &bull; API Provided by:{" "}
+            <Link
+              color="secondary"
+              target="_blank"
+              href="https://twitter.com/covid19indiaorg"
+            >
+              covid19indiaorg
+            </Link>
+          </Typography>
+        </Card>
+      </Paper>
     </ThemeProvider>
   );
 }
 
 function TestedData(props) {
   return (
-    <Card>
+    <Card variant="outlined">
       <CardContent>
-        <Typography color="textSecondary" gutterBottom>
-          Tested {formatNumber(props.testedData.totalsamplestested)} as of{" "}
-          {props.testedData.testedasof} per{" "}
-          <Link target="_blank" href={props.testedData.source}>
-            source
+        <Typography>Tested</Typography>
+        <Typography variant="h6">
+          {formatNumber(props.testedData.totalsamplestested)}
+        </Typography>
+        <Typography variant="caption">
+          Last updated: {props.testedData.testedasof}
+        </Typography>
+        <br></br>
+        <Typography variant="caption" color="#FFF">
+          <Link
+            color="secondary"
+            target="_blank"
+            href={props.testedData.source}
+          >
+            SOURCE
           </Link>
         </Typography>
       </CardContent>
@@ -184,56 +215,61 @@ function TotalCases(props) {
     return returnValue;
   }
   return (
-    <TableContainer component={Paper}>
-      {props.globalData.map((testItem) => (
-        <ExpansionPanel key={testItem.state}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <div>
-              <b>{testItem.state}</b>
-              <br />
-              <div className={classes.chips}>
-                <Chip
-                  label={getFormatted(
-                    testItem.confirmed,
-                    testItem.deltaconfirmed
-                  )}
-                  avatar={<Avatar>T</Avatar>}
-                />
-                <Chip
-                  label={formatNumber(testItem.active)}
-                  avatar={<Avatar className={classes.blue}>A</Avatar>}
-                />
+    <Card variant="outlined">
+      <TableContainer>
+        {props.globalData.map((testItem) => (
+          <ExpansionPanel key={testItem.state}>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <div>
+                <b>{testItem.state}</b>
+                <br />
+                <div className={classes.chips}>
+                  <Chip
+                    label={getFormatted(
+                      testItem.confirmed,
+                      testItem.deltaconfirmed
+                    )}
+                    avatar={<Avatar>T</Avatar>}
+                  />
+                  <Chip
+                    label={formatNumber(testItem.active)}
+                    avatar={<Avatar className={classes.blue}>A</Avatar>}
+                  />
 
-                <Chip
-                  label={getFormatted(
-                    testItem.recovered,
-                    testItem.deltarecovered
-                  )}
-                  avatar={<Avatar className={classes.recovered}>R</Avatar>}
-                />
+                  <Chip
+                    label={getFormatted(
+                      testItem.recovered,
+                      testItem.deltarecovered
+                    )}
+                    avatar={<Avatar className={classes.recovered}>R</Avatar>}
+                  />
 
-                <Chip
-                  avatar={<Avatar className={classes.red}>D</Avatar>}
-                  label={getFormatted(testItem.deaths, testItem.deltadeaths)}
-                />
+                  <Chip
+                    avatar={<Avatar className={classes.red}>D</Avatar>}
+                    label={getFormatted(testItem.deaths, testItem.deltadeaths)}
+                  />
+                </div>
+                <LastUpdated date={testItem.lastupdatedtime} />
               </div>
-              <LastUpdated date={testItem.lastupdatedtime} />
-            </div>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            {testItem.state !== "Total" && props.cityData ? (
-              <DetailedPanel state={testItem.state} cityList={props.cityData} />
-            ) : (
-              "Above numbers represents Total, Active, Recovered & Death cases"
-            )}
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      ))}
-    </TableContainer>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              {testItem.state !== "Total" && props.cityData ? (
+                <DetailedPanel
+                  state={testItem.state}
+                  cityList={props.cityData}
+                />
+              ) : (
+                "Above numbers represents Total, Active, Recovered & Death cases"
+              )}
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        ))}
+      </TableContainer>
+    </Card>
   );
 }
 
